@@ -1,18 +1,40 @@
-window.onload = function(){
-    const display = new ROT.Display({ width: 80, height: 20 })
-    const container = display.getContainer()
-    
-    let foreground, background, colors
-    
-    for (let i = 0; i < 15; i++) {
-        foreground = ROT.Color.toRGB([255 - i * 20, 255 - i * 20, 255 - i * 20])
-        background = ROT.Color.toRGB([i * 20, i * 20, i * 20])
-        colors = "%c{" + foreground + "}%b{" + background + "}"
-        const str = colors + "Hello world!"
-        display.drawText(2, i, str)
-        console.log(i, colors)
+const Game = {
+    // dunno why these variables are private
+    _display: null,
+    _currentScreen: null,
+
+    init: function () {
+        this._display = new ROT.Display({ width: 80, height: 24 })
+        const bindEventToScreen = event => {
+            window.addEventListener(event, e => {
+                if(this._currentScreen !== null){
+                    this._currentScreen.handleInput(event, e)
+                }
+            })
+        }
+        bindEventToScreen('keydown')
+        bindEventToScreen('keyup')
+        bindEventToScreen('keypress')
+    },
+    getDisplay: function () {
+        return this._display
+    },
+    switchScreen: function(screen){
+        if(this._currentScreen !== null){
+            this._currentScreen.exit()
+        }
+        this.getDisplay().clear()
+        this._currentScreen = screen
+        if(!this._currentScreen !== null){
+            this._currentScreen.enter()
+            this._currentScreen.render(this._display)
+        }
     }
-    
-    document.body.appendChild(container)
 }
 
+window.onload = function () {
+
+    Game.init()
+    document.body.appendChild(Game.getDisplay().getContainer())
+    Game.switchScreen(Game.Screen.startScreen)
+}
