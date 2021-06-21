@@ -22,16 +22,20 @@ Game.Screen.startScreen = {
 
 Game.Screen.playScreen = {
     _map: null,
+    _centerX: 0,
+    _centerY: 0,
     enter() {
         console.log("Entered play screen")
         const map = []
-        for (let x = 0; x < 80; x++) {
+        const mapWidth = 500
+        const mapHeight = 500
+        for (let x = 0; x < mapWidth; x++) {
             map.push([])
-            for (let y = 0; y < 24; y++) {
+            for (let y = 0; y < mapHeight; y++) {
                 map[x].push(Game.Tile.nullTile)
             }
         }
-        const generator = new ROT.Map.Cellular(80, 24)
+        const generator = new ROT.Map.Cellular(mapWidth, mapHeight)
         generator.randomize(0.5)
         let totalIterations = 3
         // Iteratively smoothen the map, will make more consistently shaped and connected maps
@@ -52,18 +56,36 @@ Game.Screen.playScreen = {
         console.log("Exited play screen")
     },
     render(display) {
-        for (let x = 0; x < this._map.getWidth(); x++) {
-            for (let y = 0; y < this._map.getHeight(); y++) {
+        const screenWidth = Game.getScreenWidth()
+        const screenHeight = Game.getScreenHeight()
+
+        // Make sure the x-axis doesn't go to the left of the left bound
+        let topLeftX = Math.max(0, this._centerX - (screenWidth / 2))
+        // Make sure we still have enough space to fit an entire game screen
+        topLeftX = Math.min(topLeftX, this._map.getWidth() - screenWidth)
+
+        let topLeftY = Math.max(0, this._centerY - (screenHeight / 2))
+        topLeftY = Math.min(topLeftY, this._map.getHeight() - screenHeight)
+        for (let x = topLeftX; x < topLeftX + screenWidth; x++) {
+            for (let y = topLeftY; y < topLeftY + screenHeight; y++) {
                 const glyph = this._map.getTile(x, y).getGlyph()
+                // rendered relative to the top left cell
                 display.draw(
-                    x,
-                    y,
+                    x - topLeftX,
+                    y - topLeftY,
                     glyph.getChar(),
                     glyph.getForeground(),
                     glyph.getBackground()
                 )
             }
         }
+        display.draw(
+            this._centerX - topLeftX,
+            this._centerY - topLeftY,
+            '@',
+            'white',
+            'black'
+        )
     },
     handleInput(inputType, inputData) {
         if (inputType === "keydown") {
@@ -72,7 +94,39 @@ Game.Screen.playScreen = {
             } else if (inputData.keyCode === 27) {
                 Game.switchScreen(Game.Screen.loseScreen)
             }
+            if (inputData.keyCode === 97) {
+                this.move(-1, 1)
+            } else if (inputData.keyCode === 98) {
+                this.move(0, 1)
+            } else if (inputData.keyCode === 99) {
+                this.move(1, 1)
+            } else if (inputData.keyCode === 100) {
+                this.move(-1, 0)
+            } else if (inputData.keyCode === 102) {
+                this.move(1, 0)
+            } else if (inputData.keyCode === 103) {
+                this.move(-1, -1)
+            } else if (inputData.keyCode === 104) {
+                this.move(0, -1)
+            } else if (inputData.keyCode === 105) {
+                this.move(1, -1)
+            }
         }
+    },
+    move(dX, dY) {
+        // Positive dX means movement right
+        // negative means movement left
+        // 0 means none
+        // Note that we have to subtract 1 from the map's width and height to get the real index of the last cell as arrays are 0-based.
+        // max and min used to ensure staying within bounds
+        this._centerX = Math.max(
+            0,
+            Math.min(this._map.getWidth() - 1, this._centerX + dX)
+        )
+        this._centerY = Math.max(
+            0,
+            Math.min(this._map.getHeight() - 1, this._centerY + dY)
+        )
     },
 }
 

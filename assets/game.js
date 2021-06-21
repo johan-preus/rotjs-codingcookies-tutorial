@@ -2,13 +2,20 @@ const Game = {
     // dunno why these variables are private
     _display: null,
     _currentScreen: null,
+    _screenWidth: 80,
+    _screenHeight: 24,
 
     init() {
-        this._display = new ROT.Display({ width: 80, height: 24 })
+        this._display = new ROT.Display({
+            width: this._screenWidth,
+            height: this._screenHeight,
+        })
         const bindEventToScreen = (event) => {
             window.addEventListener(event, (e) => {
                 if (this._currentScreen !== null) {
                     this._currentScreen.handleInput(event, e)
+                    this._display.clear()
+                    this._currentScreen.render(this._display)
                 }
             })
         }
@@ -18,6 +25,12 @@ const Game = {
     },
     getDisplay() {
         return this._display
+    },
+    getScreenWidth() {
+        return this._screenWidth
+    },
+    getScreenHeight() {
+        return this._screenHeight
     },
     switchScreen(screen) {
         if (this._currentScreen !== null) {
@@ -31,13 +44,6 @@ const Game = {
         }
     },
 }
-
-
-
-
-
-
-
 
 window.onload = function () {
     Game.init()
