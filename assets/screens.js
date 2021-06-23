@@ -22,8 +22,8 @@ Game.Screen.startScreen = {
 
 Game.Screen.playScreen = {
     _map: null,
-    _centerX: 0,
-    _centerY: 0,
+    // _centerX: 0,
+    // _centerY: 0,
     enter() {
         console.log("Entered play screen")
         const map = []
@@ -32,7 +32,8 @@ Game.Screen.playScreen = {
         for (let x = 0; x < mapWidth; x++) {
             map.push([])
             for (let y = 0; y < mapHeight; y++) {
-                map[x].push(Game.Tile.nullTile)
+                // map[x].push(Game.Tile.nullTile)
+                map[x].push(nullTile)
             }
         }
         const generator = new ROT.Map.Cellular(mapWidth, mapHeight)
@@ -45,12 +46,18 @@ Game.Screen.playScreen = {
         // Smoothen it one last time and then update our map
         generator.create((x, y, v) => {
             if (v === 1) {
-                map[x][y] = Game.Tile.floorTile
+                // map[x][y] = Game.Tile.floorTile
+                map[x][y] = floorTile
             } else {
-                map[x][y] = Game.Tile.wallTile
+                // map[x][y] = Game.Tile.wallTile
+                map[x][y] = wallTile
             }
         })
         this._map = new Game.Map(map)
+        this._player = new Entity(Game.PlayerTemplate)
+        const position = this._map.getRandomFloorPosition()
+        this._player.setX(position.x)
+        this._player.setY(position.y)
     },
     exit() {
         console.log("Exited play screen")
@@ -60,31 +67,31 @@ Game.Screen.playScreen = {
         const screenHeight = Game.getScreenHeight()
 
         // Make sure the x-axis doesn't go to the left of the left bound
-        let topLeftX = Math.max(0, this._centerX - (screenWidth / 2))
+        let topLeftX = Math.max(0, this._player.getX() - screenWidth / 2)
         // Make sure we still have enough space to fit an entire game screen
         topLeftX = Math.min(topLeftX, this._map.getWidth() - screenWidth)
 
-        let topLeftY = Math.max(0, this._centerY - (screenHeight / 2))
+        let topLeftY = Math.max(0, this._player.getY() - screenHeight / 2)
         topLeftY = Math.min(topLeftY, this._map.getHeight() - screenHeight)
         for (let x = topLeftX; x < topLeftX + screenWidth; x++) {
             for (let y = topLeftY; y < topLeftY + screenHeight; y++) {
-                const glyph = this._map.getTile(x, y).getGlyph()
+                const tile = this._map.getTile(x, y)
                 // rendered relative to the top left cell
                 display.draw(
                     x - topLeftX,
                     y - topLeftY,
-                    glyph.getChar(),
-                    glyph.getForeground(),
-                    glyph.getBackground()
+                    tile.getChar(),
+                    tile.getForeground(),
+                    tile.getBackground()
                 )
             }
         }
         display.draw(
-            this._centerX - topLeftX,
-            this._centerY - topLeftY,
-            '@',
-            'white',
-            'black'
+            this._player.getX() - topLeftX,
+            this._player.getY() - topLeftY,
+            this._player.getChar(),
+            this._player.getForeground(),
+            this._player.getBackground()
         )
     },
     handleInput(inputType, inputData) {
@@ -119,14 +126,9 @@ Game.Screen.playScreen = {
         // 0 means none
         // Note that we have to subtract 1 from the map's width and height to get the real index of the last cell as arrays are 0-based.
         // max and min used to ensure staying within bounds
-        this._centerX = Math.max(
-            0,
-            Math.min(this._map.getWidth() - 1, this._centerX + dX)
-        )
-        this._centerY = Math.max(
-            0,
-            Math.min(this._map.getHeight() - 1, this._centerY + dY)
-        )
+        const newX = this._player.getX() + dX
+        const newY = this._player.getY() + dY
+        this._player.tryMove(newX, newY, this._map)
     },
 }
 
