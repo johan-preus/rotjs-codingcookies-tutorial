@@ -4,19 +4,29 @@ class Entity extends Glyph {
         this._name = properties.name || ""
         this._x = properties.x || 0
         this._y = properties.y || 0
+        this._map = null
+
         this._attachedMixins = {}
+        this._attachedMixinGroups = {}
+
         const mixins = properties.mixins || []
         for (let i = 0; i < mixins.length; i++) {
             for (let key in mixins[i]) {
                 if (
                     key !== "init" &&
-                    key !== "init" &&
+                    key !== "name" &&
                     !this.hasOwnProperty(key)
                 ) {
                     this[key] = mixins[i][key]
                 }
             }
             this._attachedMixins[mixins[i].name] = true
+
+            // If a group name is present, add it
+            if (mixins[i].groupName) {
+                this._attachedMixinGroups[mixins[i].groupName] = true
+            }
+
             if (mixins[i].init) {
                 mixins[i].init(this, properties)
             }
@@ -28,7 +38,7 @@ class Entity extends Glyph {
         if (typeof obj === "object") {
             return this._attachedMixins[obj.name]
         }
-        return this._attachedMixins[obj]
+        return this._attachedMixins[obj] || this._attachedMixinGroups[obj]
     }
 
     setName(name) {
@@ -43,6 +53,10 @@ class Entity extends Glyph {
         this._y = y
     }
 
+    setMap(map) {
+        this._map = map
+    }
+
     getName() {
         return this._name
     }
@@ -53,5 +67,9 @@ class Entity extends Glyph {
 
     getY() {
         return this._y
+    }
+
+    getMap() {
+        return this._map
     }
 }

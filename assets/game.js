@@ -14,14 +14,19 @@ const Game = {
             window.addEventListener(event, (e) => {
                 if (this._currentScreen !== null) {
                     this._currentScreen.handleInput(event, e)
-                    this._display.clear()
-                    this._currentScreen.render(this._display)
+                    // this._display.clear()
+                    // this._currentScreen.render(this._display)
+                    this.refresh() //is this line supposed to be here?
                 }
             })
         }
         bindEventToScreen("keydown")
         bindEventToScreen("keyup")
         bindEventToScreen("keypress")
+    },
+    refresh(){
+        this._display.clear()
+        this._currentScreen.render(this._display)
     },
     getDisplay() {
         return this._display
