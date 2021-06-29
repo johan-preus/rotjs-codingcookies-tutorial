@@ -6,7 +6,7 @@ Game.Map = function (tiles, player) {
     this._scheduler = new ROT.Scheduler.Simple()
     this._engine = new ROT.Engine(this._scheduler)
     this.addEntityAtRandomPosition(player)
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 50; i++) {
         this.addEntityAtRandomPosition(new Entity(Game.FungusTemplate))
     }
 }
@@ -65,6 +65,18 @@ Game.Map.prototype.addEntityAtRandomPosition = function (entity) {
     this.addEntity(entity)
 }
 
+Game.Map.prototype.removeEntity = function (entity) {
+    for (let i = 0; i < this._entities.length; i++) {
+        if (this._entities[i] === entity) {
+            this._entities.splice(i, 1)
+            break
+        }
+    }
+    if (entity.hasMixin("Actor")) {
+        this._scheduler.remove(entity)
+    }
+}
+
 Game.Map.prototype.dig = function (x, y) {
     if (this.getTile(x, y).isDiggable()) {
         this._tiles[x][y] = floorTile
@@ -76,6 +88,10 @@ Game.Map.prototype.getRandomFloorPosition = function () {
     do {
         x = Math.floor(Math.random() * this._width)
         y = Math.floor(Math.random() * this._height)
-    } while (this.getTile(x, y) != floorTile || this.getEntityAt(x, y))
+    } while (!this.isEmptyFloor(x, y))
     return { x: x, y: y }
+}
+
+Game.Map.prototype.isEmptyFloor = function (x, y) {
+    return this.getTile(x, y) === floorTile && !this.getEntityAt(x, y)
 }

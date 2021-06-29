@@ -27,8 +27,8 @@ Game.Screen.playScreen = {
     enter() {
         console.log("Entered play screen")
         const map = []
-        const mapWidth = 500
-        const mapHeight = 500
+        const mapWidth = 100
+        const mapHeight = 48
         for (let x = 0; x < mapWidth; x++) {
             map.push([])
             for (let y = 0; y < mapHeight; y++) {
