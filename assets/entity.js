@@ -10,6 +10,8 @@ class Entity extends Glyph {
         this._attachedMixinGroups = {}
 
         const mixins = properties.mixins || []
+
+        // if this has an undefined error, make sure entities are in correct order
         for (let i = 0; i < mixins.length; i++) {
             for (let key in mixins[i]) {
                 if (

@@ -16,7 +16,7 @@ const Game = {
                     this._currentScreen.handleInput(event, e)
                     // this._display.clear()
                     // this._currentScreen.render(this._display)
-                    this.refresh() //is this line supposed to be here?
+                    // this.refresh() //is this line supposed to be here?
                 }
             })
         }
@@ -24,7 +24,7 @@ const Game = {
         bindEventToScreen("keyup")
         bindEventToScreen("keypress")
     },
-    refresh(){
+    refresh() {
         this._display.clear()
         this._currentScreen.render(this._display)
     },
@@ -45,7 +45,7 @@ const Game = {
         this._currentScreen = screen
         if (!this._currentScreen !== null) {
             this._currentScreen.enter()
-            this._currentScreen.render(this._display)
+            this.refresh()
         }
     },
 }

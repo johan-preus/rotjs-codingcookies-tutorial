@@ -53,8 +53,9 @@ Game.Screen.playScreen = {
                 map[x][y] = wallTile
             }
         })
-        this._map = new Game.Map(map)
         this._player = new Entity(Game.PlayerTemplate)
+        this._map = new Game.Map(map, this._player)
+        this._map.getEngine().start()
         const position = this._map.getRandomFloorPosition()
         this._player.setX(position.x)
         this._player.setY(position.y)
@@ -86,13 +87,24 @@ Game.Screen.playScreen = {
                 )
             }
         }
-        display.draw(
-            this._player.getX() - topLeftX,
-            this._player.getY() - topLeftY,
-            this._player.getChar(),
-            this._player.getForeground(),
-            this._player.getBackground()
-        )
+        const entities = this._map.getEntities()
+        for (let i = 0; i < entities.length; i++) {
+            const entity = entities[i]
+            if (
+                entity.getX() >= topLeftX &&
+                entity.getY() >= topLeftY &&
+                entity.getX() < topLeftX + screenWidth &&
+                entity.getY() < topLeftY + screenHeight
+            ) {
+                display.draw(
+                    entity.getX() - topLeftX,
+                    entity.getY() - topLeftY,
+                    entity.getChar(),
+                    entity.getForeground(),
+                    entity.getBackground()
+                )
+            }
+        }
     },
     handleInput(inputType, inputData) {
         if (inputType === "keydown") {
@@ -118,6 +130,7 @@ Game.Screen.playScreen = {
             } else if (inputData.keyCode === 105) {
                 this.move(1, -1)
             }
+            this._map.getEngine().unlock()
         }
     },
     move(dX, dY) {
