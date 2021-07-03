@@ -13,6 +13,12 @@ class Entity extends Glyph {
 
         // if this has an undefined error, make sure entities are in correct order
         for (let i = 0; i < mixins.length; i++) {
+            // console.log(this);
+            if (mixins[i].init) {
+                // console.log(this);
+                mixins[i].init(this, properties)
+                // console.log(this);
+            }
             for (let key in mixins[i]) {
                 if (
                     key !== "init" &&
@@ -29,9 +35,11 @@ class Entity extends Glyph {
                 this._attachedMixinGroups[mixins[i].groupName] = true
             }
 
-            if (mixins[i].init) {
-                mixins[i].init(this, properties)
-            }
+            // if (mixins[i].init) {
+            //     // console.log(this);
+            //     mixins[i].init(this, properties)
+            //     // console.log(this);
+            // }
         }
     }
 

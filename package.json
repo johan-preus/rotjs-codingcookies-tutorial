@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "rot-js": "^2.1.5"
+    "rot-js": "^2.1.5",
+    "sprintf-js": "^1.1.2"
   }
 }

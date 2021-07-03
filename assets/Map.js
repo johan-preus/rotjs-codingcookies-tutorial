@@ -95,3 +95,26 @@ Game.Map.prototype.getRandomFloorPosition = function () {
 Game.Map.prototype.isEmptyFloor = function (x, y) {
     return this.getTile(x, y) === floorTile && !this.getEntityAt(x, y)
 }
+
+Game.Map.prototype.getEntitiesWithinRadius = function (
+    centerX,
+    centerY,
+    radius
+) {
+    const results = []
+    const leftX = centerX - radius
+    const rightX = centerX + radius
+    const topY = centerY - radius
+    const bottomY = centerY + radius
+    for (let i = 0; i < this._entities.length; i++) {
+        if (
+            this._entities[i].getX() >= leftX &&
+            this._entities[i].getX() <= rightX &&
+            this._entities[i].getY() >= topY &&
+            this._entities[i].getY() <= bottomY
+        ) {
+            results.push(this._entities[i])
+        }
+    }
+    return results
+}

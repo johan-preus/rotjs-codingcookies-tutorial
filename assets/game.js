@@ -8,7 +8,7 @@ const Game = {
     init() {
         this._display = new ROT.Display({
             width: this._screenWidth,
-            height: this._screenHeight,
+            height: this._screenHeight + 1,
         })
         const bindEventToScreen = (event) => {
             window.addEventListener(event, (e) => {

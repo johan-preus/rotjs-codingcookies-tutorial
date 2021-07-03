@@ -105,6 +105,25 @@ Game.Screen.playScreen = {
                 )
             }
         }
+        const messages = this._player.getMessages()
+        let messageY = 0
+        // console.dir(this._player)
+        // // console.log(this._player);
+        // console.log(this._player._messages);
+        // console.log(this._player.getMessages());
+        for (let i = 0; i < messages.length; i++) {
+            messageY += display.drawText(
+                0,
+                messageY,
+                "%c{white}%b{black}" + messages[i]
+            )
+        }
+        let stats = "%c{white}%b{black}"
+        stats += vsprintf("HP: %d/%d ", [
+            this._player.getHp(),
+            this._player.getMaxHp(),
+        ])
+        display.drawText(0, screenHeight, stats)
     },
     handleInput(inputType, inputData) {
         if (inputType === "keydown") {
