@@ -22,6 +22,30 @@ const wallTile = new Tile({
     foreground: "goldenrod",
     _isDiggable: true,
 })
+const stairsUpTile = new Tile({
+    char: "<",
+    foreground: "white",
+    _isWalkable: "true",
+})
+const stairsDownTile = new Tile({
+    char: ">",
+    foreground: "white",
+    _isWalkable: "true",
+})
+
+Game.getNeighborPositions = function (x, y) {
+    const tiles = []
+    for (let dX = -1; dX < 2; dX++) {
+        for (let dY = -1; dY < 2; dY++) {
+            if (dX === 0 && dY === 0) {
+                continue
+            }
+            tiles.push({ x: x + dX, y: y + dY })
+        }
+    }
+    // randomized to prevent bias when choosing neighbor tile
+    return tiles.randomize()
+}
 
 // Game.Tile = function (glyph) {
 //     this._glyph = glyph
